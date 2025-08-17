@@ -1,0 +1,7 @@
+*build*
+.cache
+.vscode
+.idea
+*env
+src/Models/model.json
+config/config.json
