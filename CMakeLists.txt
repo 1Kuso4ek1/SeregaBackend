@@ -18,6 +18,10 @@ set(
 
     include/Filters/JwtFilter.hpp
 
+    include/Models/Messages.hpp
+    include/Models/UserKeys.hpp
+    include/Models/Users.hpp
+
     include/Utils/JwtUtils.hpp
     include/Utils/Singleton.hpp
 )
@@ -29,6 +33,10 @@ set(
     src/Controllers/StaticController.cpp
 
     src/Filters/JwtFilter.cpp
+
+    src/Models/Messages.cpp
+    src/Models/UserKeys.cpp
+    src/Models/Users.cpp
 
     src/main.cpp
 )
