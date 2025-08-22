@@ -25,11 +25,11 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "User successfully created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/RegisterResponse" }
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
               }
             }
           },
@@ -93,7 +93,7 @@
     "/users/{id}": {
       "get": {
         "tags": ["Users"],
-        "summary": "Get public profile and prekey by user ID",
+        "summary": "Get public profile and pre_key by user ID",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
         ],
@@ -113,7 +113,7 @@
     "/users/me": {
       "get": {
         "tags": ["Users"],
-        "summary": "Get public profile and prekey by access token",
+        "summary": "Get public profile and pre_key by access token",
         "responses": {
           "200": {
             "description": "Public user data",
@@ -197,16 +197,9 @@
           "username": { "type": "string" },
           "password": { "type": "string" },
           "identity_key": { "type": "string", "description": "Base64 identity key" },
-          "prekey": { "type": "string", "description": "Base64 public prekey" }
+          "pre_key": { "type": "string", "description": "Base64 public pre_key" }
         },
-        "required": ["username", "password", "identity_key", "prekey"]
-      },
-      "RegisterResponse": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "integer" },
-          "username": { "type": "string" }
-        }
+        "required": ["username", "password", "identity_key", "pre_key"]
       },
       "LoginRequest": {
         "type": "object",
@@ -244,7 +237,7 @@
           "id": { "type": "integer" },
           "username": { "type": "string" },
           "identity_key": { "type": "string" },
-          "prekey": { "type": "string" }
+          "pre_key": { "type": "string" }
         }
       },
       "SendMessageRequest": {

@@ -27,15 +27,10 @@ void JwtFilter::doFilter(
 
     try
     {
-        const auto decoded = jwt::decode(header.substr(7));
-        const auto verifier = jwt::verify()
-            .allow_algorithm(jwt::algorithm::hs256(accessSecret))
-            .with_issuer("auth0");
+        const auto [userId, username] = Utils::verify(header.substr(7), accessSecret);
 
-        verifier.verify(decoded);
-
-        req->setParameter("user_id", decoded.get_payload_claim("user_id").as_string());
-        req->setParameter("username", decoded.get_payload_claim("username").as_string());
+        req->setParameter("user_id", userId);
+        req->setParameter("username", username);
 
         fccb();
     }

@@ -10,16 +10,19 @@ using namespace std::chrono_literals;
 namespace Utils
 {
 
-inline void saveRefreshToCookie(const std::string& token, const HttpResponsePtr& resp, int maxAge = 604800) // 7 days
+inline std::pair<std::string, std::string> verify(const std::string& token, const std::string& secret)
 {
-    Cookie cookie("refreshToken", token);
-    cookie.setHttpOnly(true);
-    cookie.setSecure(true);
-    cookie.setSameSite(Cookie::SameSite::kStrict);
-    cookie.setPath("/refresh");
-    cookie.setMaxAge(maxAge);
+    const auto decoded = jwt::decode(token);
+    const auto verifier = jwt::verify()
+            .allow_algorithm(jwt::algorithm::hs256(secret))
+            .with_issuer("auth0");
 
-    resp->addCookie(cookie);
+    verifier.verify(decoded);
+
+    return {
+        decoded.get_payload_claim("user_id").as_string(),
+        decoded.get_payload_claim("username").as_string()
+    };
 }
 
 inline std::string makeAccessToken(const int id, const std::string& username)
