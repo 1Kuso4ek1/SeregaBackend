@@ -14,9 +14,6 @@ public:
         FilterCallback&& fcb,
         FilterChainCallback&& fccb
     ) override;
-
-private:
-    static bool tryRefresh(const HttpRequestPtr& req);
 };
 
 }

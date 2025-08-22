@@ -40,14 +40,11 @@ void LoginController::login(const HttpRequestPtr& req, Callback&& callback)
         const auto accessToken = Utils::makeAccessToken(userId, username);
         const auto refreshToken = Utils::makeRefreshToken(userId, username);
 
-        req->getSession()->insert("jwtAccess", access);
-
         Json::Value json;
-        json["token"] = accessToken; // Optional, since we're storing access in session
+        json["access_token"] = accessToken;
+        json["refresh_token"] = refreshToken;
 
         const auto response = HttpResponse::newHttpJsonResponse(json);
-
-        Utils::saveRefreshToCookie(refreshToken, response);
 
         callback(response);
     }
@@ -58,19 +55,6 @@ void LoginController::login(const HttpRequestPtr& req, Callback&& callback)
 
         callback(response);
     }
-}
-
-void LoginController::logout(const HttpRequestPtr& req, Callback&& callback)
-{
-    const auto response = HttpResponse::newHttpResponse();
-
-    // Removing cookie
-    Utils::saveRefreshToCookie("", response, 0);
-
-    // Clearing session
-    req->getSession()->erase("jwtAccess");
-
-    callback(response);
 }
 
 bool LoginController::validateUser(const std::shared_ptr<Json::Value>& json)

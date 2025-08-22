@@ -14,15 +14,11 @@ public:
     void registerUser(const HttpRequestPtr& req, Callback&& callback);
     void login(const HttpRequestPtr& req, Callback&& callback);
 
-    static void logout(const HttpRequestPtr& req, Callback&& callback);
-
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(LoginController::registerUser, "/register", Post);
-        ADD_METHOD_TO(LoginController::login, "/login", Post);
-
-        ADD_METHOD_TO(logout, "/logout", Post);
+        ADD_METHOD_TO(LoginController::registerUser, "/auth/register", Post);
+        ADD_METHOD_TO(LoginController::login, "/auth/login", Post);
 
     METHOD_LIST_END
 

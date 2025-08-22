@@ -13,29 +13,21 @@ void JwtFilter::doFilter(
 {
     static auto accessSecret = app().getCustomConfig()["jwt"]["access_secret"].asString();
 
-    const auto authHeader = req->getHeader("Authorization");
-    const auto sessionJwt = req->getSession()->get<std::string>("jwtAccess");
+    const auto header = req->getHeader("Authorization");
 
-    auto token = authHeader.empty() ? sessionJwt : authHeader.substr(7);
-
-    if(authHeader.empty() && sessionJwt.empty())
+    if(header.empty())
     {
-        if(tryRefresh(req))
-            token = req->getSession()->get<std::string>("jwtAccess");
-        else
-        {
-            const auto response = HttpResponse::newHttpResponse();
-            response->setStatusCode(k401Unauthorized);
+        const auto response = HttpResponse::newHttpResponse();
+        response->setStatusCode(k401Unauthorized);
 
-            fcb(response);
+        fcb(response);
 
-            return;
-        }
+        return;
     }
 
     try
     {
-        const auto decoded = jwt::decode(token);
+        const auto decoded = jwt::decode(header.substr(7));
         const auto verifier = jwt::verify()
             .allow_algorithm(jwt::algorithm::hs256(accessSecret))
             .with_issuer("auth0");
@@ -53,40 +45,6 @@ void JwtFilter::doFilter(
         response->setStatusCode(k401Unauthorized);
 
         fcb(response);
-    }
-}
-
-bool JwtFilter::tryRefresh(const HttpRequestPtr& req)
-{
-    static auto refreshSecret = app().getCustomConfig()["jwt"]["refresh_secret"].asString();
-
-    const auto refreshToken = req->getCookie("refreshToken");
-
-    if(refreshToken.empty())
-        return false;
-
-    try
-    {
-        const auto decoded = jwt::decode(refreshToken);
-        const auto verifier = jwt::verify()
-                .allow_algorithm(jwt::algorithm::hs256(refreshSecret))
-                .with_issuer("auth0");
-
-        verifier.verify(decoded);
-
-        const auto userId = decoded.get_payload_claim("user_id").as_string();
-        const auto username = decoded.get_payload_claim("username").as_string();
-
-        req->getSession()->insert(
-            "jwtAccess",
-            Utils::makeAccessToken(std::stoi(userId), username)
-        );
-
-        return true;
-    }
-    catch(...)
-    {
-        return false;
     }
 }
 
