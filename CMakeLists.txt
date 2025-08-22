@@ -40,14 +40,14 @@ add_subdirectory(libraries/drogon)
 add_subdirectory(libraries/jwt-cpp)
 
 add_executable(
-    backend
+    Serega
 
     ${BACKEND_HEADERS}
     ${BACKEND_SOURCES}
 )
 
 
-target_link_libraries(backend drogon jwt-cpp)
+target_link_libraries(Serega PRIVATE drogon jwt-cpp)
 
-target_include_directories(backend PUBLIC ${CMAKE_SOURCE_DIR}/include/)
+target_include_directories(Serega PUBLIC ${CMAKE_SOURCE_DIR}/include/)
 

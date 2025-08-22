@@ -1,5 +1,5 @@
 # Generates src/Models/Test.h and src/Models/Test.cc
-build/drogon_ctl create model src/Models/
+cmake-build-debug/drogon_ctl create model src/Models/
 
 # Move and rename src/Models/*.h to include/Models/*.hpp
 # Rename src/Models/*.cc to src/Models/*.cpp
