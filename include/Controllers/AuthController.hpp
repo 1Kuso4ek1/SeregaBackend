@@ -8,7 +8,7 @@ using Callback = std::function<void(const HttpResponsePtr&)>;
 namespace Controllers
 {
 
-class LoginController final : public HttpController<LoginController>
+class AuthController final : public HttpController<AuthController>
 {
 public:
     static void registerUser(const HttpRequestPtr& req, Callback&& callback);
@@ -18,9 +18,9 @@ public:
 public:
     METHOD_LIST_BEGIN
 
-        ADD_METHOD_TO(LoginController::registerUser, "/auth/register", Post);
-        ADD_METHOD_TO(LoginController::login, "/auth/login", Post);
-        ADD_METHOD_TO(LoginController::refresh, "/auth/refresh", Post);
+        ADD_METHOD_TO(registerUser, "/auth/register", Post);
+        ADD_METHOD_TO(login, "/auth/login", Post);
+        ADD_METHOD_TO(refresh, "/auth/refresh", Post);
 
     METHOD_LIST_END
 

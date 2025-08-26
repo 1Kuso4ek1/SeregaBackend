@@ -13,8 +13,9 @@ set(OUTPUT_DIR ${CMAKE_BINARY_DIR})
 set(
     BACKEND_HEADERS
 
-    include/Controllers/LoginController.hpp
+    include/Controllers/AuthController.hpp
     include/Controllers/StaticController.hpp
+    include/Controllers/UsersController.hpp
 
     include/Filters/JwtFilter.hpp
 
@@ -29,8 +30,9 @@ set(
 set(
     BACKEND_SOURCES
 
-    src/Controllers/LoginController.cpp
+    src/Controllers/AuthController.cpp
     src/Controllers/StaticController.cpp
+    src/Controllers/UsersController.cpp
 
     src/Filters/JwtFilter.cpp
 

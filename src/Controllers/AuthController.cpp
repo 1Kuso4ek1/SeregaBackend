@@ -1,4 +1,4 @@
-#include "Controllers/LoginController.hpp"
+#include "Controllers/AuthController.hpp"
 
 #include "Utils/JwtUtils.hpp"
 
@@ -10,7 +10,7 @@ namespace Models = drogon_model::serega;
 namespace Controllers
 {
 
-void LoginController::registerUser(const HttpRequestPtr& req, Callback&& callback)
+void AuthController::registerUser(const HttpRequestPtr& req, Callback&& callback)
 {
     const auto request = req->getJsonObject();
 
@@ -54,7 +54,7 @@ void LoginController::registerUser(const HttpRequestPtr& req, Callback&& callbac
     login(req, std::move(callback));
 }
 
-void LoginController::login(const HttpRequestPtr& req, Callback&& callback)
+void AuthController::login(const HttpRequestPtr& req, Callback&& callback)
 {
     const auto request = req->getJsonObject();
 
@@ -87,7 +87,7 @@ void LoginController::login(const HttpRequestPtr& req, Callback&& callback)
     }
 }
 
-void LoginController::refresh(const HttpRequestPtr& req, Callback&& callback)
+void AuthController::refresh(const HttpRequestPtr& req, Callback&& callback)
 {
     static auto refreshSecret = app().getCustomConfig()["jwt"]["refresh_secret"].asString();
 
@@ -119,7 +119,7 @@ void LoginController::refresh(const HttpRequestPtr& req, Callback&& callback)
     }
 }
 
-bool LoginController::validateUser(const std::shared_ptr<Json::Value>& json)
+bool AuthController::validateUser(const std::shared_ptr<Json::Value>& json)
 {
     static auto mapper = orm::Mapper<Models::Users>(app().getDbClient());
 
