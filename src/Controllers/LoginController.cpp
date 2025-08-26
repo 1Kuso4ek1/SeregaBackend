@@ -104,9 +104,11 @@ void LoginController::refresh(const HttpRequestPtr& req, Callback&& callback)
 
         const auto [userId, username] = Utils::verify(refreshToken, refreshSecret);
         const auto accessToken = Utils::makeAccessToken(std::stoi(userId), username);
+        const auto newRefreshToken = Utils::makeRefreshToken(std::stoi(userId), username);
 
         Json::Value json;
         json["access_token"] = accessToken;
+        json["refresh_token"] = newRefreshToken;
         json["expires_in"] = 3600;
 
         callback(HttpResponse::newHttpJsonResponse(json));
