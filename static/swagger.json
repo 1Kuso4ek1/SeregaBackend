@@ -11,6 +11,7 @@
       "description": "Local server"
     }
   ],
+  "security": [{ "bearerAuth": [] }],
   "paths": {
     "/auth/register": {
       "post": {
@@ -24,6 +25,7 @@
             }
           }
         },
+        "security": [],
         "responses": {
           "200": {
             "description": "User successfully created",
@@ -50,6 +52,7 @@
             }
           }
         },
+        "security": [],
         "responses": {
           "200": {
             "description": "Successful login",
@@ -76,6 +79,7 @@
             }
           }
         },
+        "security": [],
         "responses": {
           "200": {
             "description": "New access token issued",
@@ -96,6 +100,26 @@
         "summary": "Get public profile and pre_key by user ID",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public user data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserProfileResponse" }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/users/name/{username}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get public profile and pre_key by username (case insensitive)",
+        "parameters": [
+          { "name": "username", "in": "path", "required": true, "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
