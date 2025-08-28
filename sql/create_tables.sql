@@ -19,3 +19,7 @@ CREATE TABLE messages (
     created_at TIMESTAMPTZ DEFAULT now(),
     delivered BOOLEAN DEFAULT FALSE
 );
+
+-- I'd say that this is some kind of migrations lol
+ALTER TABLE messages RENAME COLUMN delivered TO seen;
+ALTER TABLE user_keys DROP COLUMN updated_at;

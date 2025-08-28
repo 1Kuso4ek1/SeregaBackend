@@ -48,7 +48,6 @@ class UserKeys
         static const std::string _user_id;
         static const std::string _identity_key;
         static const std::string _pre_key;
-        static const std::string _updated_at;
     };
 
     static const int primaryKeyNumber;
@@ -130,17 +129,8 @@ class UserKeys
     void setPreKey(const std::vector<char> &pPreKey) noexcept;
     void setPreKey(const std::string &pPreKey) noexcept;
 
-    /**  For column updated_at  */
-    ///Get the value of the column updated_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfUpdatedAt() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getUpdatedAt() const noexcept;
-    ///Set the value of the column updated_at
-    void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
-    void setUpdatedAtToNull() noexcept;
 
-
-    static size_t getColumnNumber() noexcept {  return 4;  }
+    static size_t getColumnNumber() noexcept {  return 3;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -168,7 +158,6 @@ class UserKeys
     std::shared_ptr<int32_t> userId_;
     std::shared_ptr<std::vector<char>> identityKey_;
     std::shared_ptr<std::vector<char>> preKey_;
-    std::shared_ptr<::trantor::Date> updatedAt_;
     struct MetaData
     {
         const std::string colName_;
@@ -180,7 +169,7 @@ class UserKeys
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[4]={ false };
+    bool dirtyFlag_[3]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -213,12 +202,6 @@ class UserKeys
             sql += "pre_key,";
             ++parametersCount;
         }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[3])
-        {
-            needSelection=true;
-        }
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -244,15 +227,6 @@ class UserKeys
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[3])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(parametersCount > 0)
         {

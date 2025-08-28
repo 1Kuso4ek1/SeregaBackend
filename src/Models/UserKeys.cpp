@@ -17,7 +17,6 @@ using namespace drogon_model::serega;
 const std::string UserKeys::Cols::_user_id = "\"user_id\"";
 const std::string UserKeys::Cols::_identity_key = "\"identity_key\"";
 const std::string UserKeys::Cols::_pre_key = "\"pre_key\"";
-const std::string UserKeys::Cols::_updated_at = "\"updated_at\"";
 const std::string UserKeys::primaryKeyName = "user_id";
 const bool UserKeys::hasPrimaryKey = true;
 const std::string UserKeys::tableName = "\"user_keys\"";
@@ -25,8 +24,7 @@ const std::string UserKeys::tableName = "\"user_keys\"";
 const std::vector<typename UserKeys::MetaData> UserKeys::metaData_={
 {"user_id","int32_t","integer",4,0,1,1},
 {"identity_key","std::vector<char>","bytea",0,0,0,1},
-{"pre_key","std::vector<char>","bytea",0,0,0,1},
-{"updated_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+{"pre_key","std::vector<char>","bytea",0,0,0,1}
 };
 const std::string &UserKeys::getColumnName(size_t index) noexcept(false)
 {
@@ -59,33 +57,11 @@ UserKeys::UserKeys(const Row &r, const ssize_t indexOffset) noexcept
                 preKey_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
-        if(!r["updated_at"].isNull())
-        {
-            auto timeStr = r["updated_at"].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 4 > r.size())
+        if(offset + 3 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -116,36 +92,13 @@ UserKeys::UserKeys(const Row &r, const ssize_t indexOffset) noexcept
                 preKey_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
-        index = offset + 3;
-        if(!r[index].isNull())
-        {
-            auto timeStr = r[index].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
     }
 
 }
 
 UserKeys::UserKeys(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -174,32 +127,6 @@ UserKeys::UserKeys(const Json::Value &pJson, const std::vector<std::string> &pMa
         {
             auto str = pJson[pMasqueradingVector[2]].asString();
             preKey_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
-        }
-    }
-    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson[pMasqueradingVector[3]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[3]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
         }
     }
 }
@@ -232,38 +159,12 @@ UserKeys::UserKeys(const Json::Value &pJson) noexcept(false)
             preKey_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
-    if(pJson.isMember("updated_at"))
-    {
-        dirtyFlag_[3]=true;
-        if(!pJson["updated_at"].isNull())
-        {
-            auto timeStr = pJson["updated_at"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
 }
 
 void UserKeys::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -293,32 +194,6 @@ void UserKeys::updateByMasqueradedJson(const Json::Value &pJson,
             preKey_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
-    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson[pMasqueradingVector[3]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[3]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
 }
 
 void UserKeys::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -346,32 +221,6 @@ void UserKeys::updateByJson(const Json::Value &pJson) noexcept(false)
         {
             auto str = pJson["pre_key"].asString();
             preKey_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
-        }
-    }
-    if(pJson.isMember("updated_at"))
-    {
-        dirtyFlag_[3] = true;
-        if(!pJson["updated_at"].isNull())
-        {
-            auto timeStr = pJson["updated_at"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
         }
     }
 }
@@ -456,28 +305,6 @@ void UserKeys::setPreKey(const std::string &pPreKey) noexcept
     dirtyFlag_[2] = true;
 }
 
-const ::trantor::Date &UserKeys::getValueOfUpdatedAt() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(updatedAt_)
-        return *updatedAt_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &UserKeys::getUpdatedAt() const noexcept
-{
-    return updatedAt_;
-}
-void UserKeys::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
-{
-    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
-    dirtyFlag_[3] = true;
-}
-void UserKeys::setUpdatedAtToNull() noexcept
-{
-    updatedAt_.reset();
-    dirtyFlag_[3] = true;
-}
-
 void UserKeys::updateId(const uint64_t id)
 {
 }
@@ -487,8 +314,7 @@ const std::vector<std::string> &UserKeys::insertColumns() noexcept
     static const std::vector<std::string> inCols={
         "user_id",
         "identity_key",
-        "pre_key",
-        "updated_at"
+        "pre_key"
     };
     return inCols;
 }
@@ -528,17 +354,6 @@ void UserKeys::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
 }
 
 const std::vector<std::string> UserKeys::updateColumns() const
@@ -555,10 +370,6 @@ const std::vector<std::string> UserKeys::updateColumns() const
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
-    }
-    if(dirtyFlag_[3])
-    {
-        ret.push_back(getColumnName(3));
     }
     return ret;
 }
@@ -598,17 +409,6 @@ void UserKeys::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[3])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
 }
 Json::Value UserKeys::toJson() const
 {
@@ -637,14 +437,6 @@ Json::Value UserKeys::toJson() const
     {
         ret["pre_key"]=Json::Value();
     }
-    if(getUpdatedAt())
-    {
-        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
-    }
-    else
-    {
-        ret["updated_at"]=Json::Value();
-    }
     return ret;
 }
 
@@ -652,7 +444,7 @@ Json::Value UserKeys::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 4)
+    if(pMasqueradingVector.size() == 3)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -687,17 +479,6 @@ Json::Value UserKeys::toMasqueradedJson(
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
-        if(!pMasqueradingVector[3].empty())
-        {
-            if(getUpdatedAt())
-            {
-                ret[pMasqueradingVector[3]]=getUpdatedAt()->toDbStringLocal();
-            }
-            else
-            {
-                ret[pMasqueradingVector[3]]=Json::Value();
-            }
-        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -724,14 +505,6 @@ Json::Value UserKeys::toMasqueradedJson(
     else
     {
         ret["pre_key"]=Json::Value();
-    }
-    if(getUpdatedAt())
-    {
-        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
-    }
-    else
-    {
-        ret["updated_at"]=Json::Value();
     }
     return ret;
 }
@@ -768,18 +541,13 @@ bool UserKeys::validateJsonForCreation(const Json::Value &pJson, std::string &er
         err="The pre_key column cannot be null";
         return false;
     }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(3, "updated_at", pJson["updated_at"], err, true))
-            return false;
-    }
     return true;
 }
 bool UserKeys::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                   const std::vector<std::string> &pMasqueradingVector,
                                                   std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         err = "Bad masquerading vector";
         return false;
@@ -824,14 +592,6 @@ bool UserKeys::validateMasqueradedJsonForCreation(const Json::Value &pJson,
             return false;
         }
       }
-      if(!pMasqueradingVector[3].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[3]))
-          {
-              if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
-                  return false;
-          }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -862,18 +622,13 @@ bool UserKeys::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(2, "pre_key", pJson["pre_key"], err, false))
             return false;
     }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(3, "updated_at", pJson["updated_at"], err, false))
-            return false;
-    }
     return true;
 }
 bool UserKeys::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                 const std::vector<std::string> &pMasqueradingVector,
                                                 std::string &err)
 {
-    if(pMasqueradingVector.size() != 4)
+    if(pMasqueradingVector.size() != 3)
     {
         err = "Bad masquerading vector";
         return false;
@@ -897,11 +652,6 @@ bool UserKeys::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
-      {
-          if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
     }
@@ -949,17 +699,6 @@ bool UserKeys::validJsonOfField(size_t index,
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 3:
-            if(pJson.isNull())
-            {
-                return true;
             }
             if(!pJson.isString())
             {

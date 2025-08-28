@@ -156,7 +156,7 @@
     },
     "/chats/{chat_id}/messages": {
       "post": {
-        "tags": ["Chat"],
+        "tags": ["Chats"],
         "summary": "Send a message to a chat",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
@@ -180,11 +180,12 @@
             }
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       },
       "get": {
-        "tags": ["Chat"],
+        "tags": ["Chats"],
         "summary": "Get messages from a chat",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
@@ -204,7 +205,8 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     }
@@ -271,10 +273,9 @@
       "SendMessageRequest": {
         "type": "object",
         "properties": {
-          "user_id": { "type": "integer" },
           "content": { "type": "string", "description": "Encrypted message content" }
         },
-        "required": ["user_id", "content"]
+        "required": ["content"]
       },
       "SendMessageResponse": {
         "type": "object",
@@ -287,9 +288,10 @@
         "properties": {
           "id": { "type": "integer" },
           "sender_id": { "type": "integer" },
-          "recipient_id": { "type": "integer" },
+          "receiver_id": { "type": "integer" },
           "content": { "type": "string", "description": "Encrypted message content" },
-          "timestamp": { "type": "string", "format": "date-time" }
+          "created_at": { "type": "string", "format": "date-time" },
+          "seen": { "type": "boolean" }
         }
       }
     },
@@ -318,7 +320,7 @@
       "description": "User profiles and keys"
     },
     {
-      "name": "Chat",
+      "name": "Chats",
       "description": "Chat messages"
     }
   ]

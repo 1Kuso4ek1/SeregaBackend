@@ -50,7 +50,7 @@ class Messages
         static const std::string _receiver_id;
         static const std::string _content;
         static const std::string _created_at;
-        static const std::string _delivered;
+        static const std::string _seen;
     };
 
     static const int primaryKeyNumber;
@@ -148,14 +148,14 @@ class Messages
     void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
     void setCreatedAtToNull() noexcept;
 
-    /**  For column delivered  */
-    ///Get the value of the column delivered, returns the default value if the column is null
-    const bool &getValueOfDelivered() const noexcept;
+    /**  For column seen  */
+    ///Get the value of the column seen, returns the default value if the column is null
+    const bool &getValueOfSeen() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<bool> &getDelivered() const noexcept;
-    ///Set the value of the column delivered
-    void setDelivered(const bool &pDelivered) noexcept;
-    void setDeliveredToNull() noexcept;
+    const std::shared_ptr<bool> &getSeen() const noexcept;
+    ///Set the value of the column seen
+    void setSeen(const bool &pSeen) noexcept;
+    void setSeenToNull() noexcept;
 
 
     static size_t getColumnNumber() noexcept {  return 6;  }
@@ -192,7 +192,7 @@ class Messages
     std::shared_ptr<int32_t> receiverId_;
     std::shared_ptr<std::vector<char>> content_;
     std::shared_ptr<::trantor::Date> createdAt_;
-    std::shared_ptr<bool> delivered_;
+    std::shared_ptr<bool> seen_;
     struct MetaData
     {
         const std::string colName_;
@@ -245,7 +245,7 @@ class Messages
         {
             needSelection=true;
         }
-        sql += "delivered,";
+        sql += "seen,";
         ++parametersCount;
         if(!dirtyFlag_[5])
         {

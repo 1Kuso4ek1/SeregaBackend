@@ -19,7 +19,7 @@ const std::string Messages::Cols::_sender_id = "\"sender_id\"";
 const std::string Messages::Cols::_receiver_id = "\"receiver_id\"";
 const std::string Messages::Cols::_content = "\"content\"";
 const std::string Messages::Cols::_created_at = "\"created_at\"";
-const std::string Messages::Cols::_delivered = "\"delivered\"";
+const std::string Messages::Cols::_seen = "\"seen\"";
 const std::string Messages::primaryKeyName = "id";
 const bool Messages::hasPrimaryKey = true;
 const std::string Messages::tableName = "\"messages\"";
@@ -30,7 +30,7 @@ const std::vector<typename Messages::MetaData> Messages::metaData_={
 {"receiver_id","int32_t","integer",4,0,0,0},
 {"content","std::vector<char>","bytea",0,0,0,1},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,0},
-{"delivered","bool","boolean",1,0,0,0}
+{"seen","bool","boolean",1,0,0,0}
 };
 const std::string &Messages::getColumnName(size_t index) noexcept(false)
 {
@@ -84,9 +84,9 @@ Messages::Messages(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        if(!r["delivered"].isNull())
+        if(!r["seen"].isNull())
         {
-            delivered_=std::make_shared<bool>(r["delivered"].as<bool>());
+            seen_=std::make_shared<bool>(r["seen"].as<bool>());
         }
     }
     else
@@ -149,7 +149,7 @@ Messages::Messages(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 5;
         if(!r[index].isNull())
         {
-            delivered_=std::make_shared<bool>(r[index].as<bool>());
+            seen_=std::make_shared<bool>(r[index].as<bool>());
         }
     }
 
@@ -226,7 +226,7 @@ Messages::Messages(const Json::Value &pJson, const std::vector<std::string> &pMa
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            delivered_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
+            seen_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
         }
     }
 }
@@ -292,12 +292,12 @@ Messages::Messages(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("delivered"))
+    if(pJson.isMember("seen"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["delivered"].isNull())
+        if(!pJson["seen"].isNull())
         {
-            delivered_=std::make_shared<bool>(pJson["delivered"].asBool());
+            seen_=std::make_shared<bool>(pJson["seen"].asBool());
         }
     }
 }
@@ -373,7 +373,7 @@ void Messages::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            delivered_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
+            seen_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
         }
     }
 }
@@ -438,12 +438,12 @@ void Messages::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("delivered"))
+    if(pJson.isMember("seen"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["delivered"].isNull())
+        if(!pJson["seen"].isNull())
         {
-            delivered_=std::make_shared<bool>(pJson["delivered"].asBool());
+            seen_=std::make_shared<bool>(pJson["seen"].asBool());
         }
     }
 }
@@ -565,25 +565,25 @@ void Messages::setCreatedAtToNull() noexcept
     dirtyFlag_[4] = true;
 }
 
-const bool &Messages::getValueOfDelivered() const noexcept
+const bool &Messages::getValueOfSeen() const noexcept
 {
     static const bool defaultValue = bool();
-    if(delivered_)
-        return *delivered_;
+    if(seen_)
+        return *seen_;
     return defaultValue;
 }
-const std::shared_ptr<bool> &Messages::getDelivered() const noexcept
+const std::shared_ptr<bool> &Messages::getSeen() const noexcept
 {
-    return delivered_;
+    return seen_;
 }
-void Messages::setDelivered(const bool &pDelivered) noexcept
+void Messages::setSeen(const bool &pSeen) noexcept
 {
-    delivered_ = std::make_shared<bool>(pDelivered);
+    seen_ = std::make_shared<bool>(pSeen);
     dirtyFlag_[5] = true;
 }
-void Messages::setDeliveredToNull() noexcept
+void Messages::setSeenToNull() noexcept
 {
-    delivered_.reset();
+    seen_.reset();
     dirtyFlag_[5] = true;
 }
 
@@ -598,7 +598,7 @@ const std::vector<std::string> &Messages::insertColumns() noexcept
         "receiver_id",
         "content",
         "created_at",
-        "delivered"
+        "seen"
     };
     return inCols;
 }
@@ -651,9 +651,9 @@ void Messages::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getDelivered())
+        if(getSeen())
         {
-            binder << getValueOfDelivered();
+            binder << getValueOfSeen();
         }
         else
         {
@@ -736,9 +736,9 @@ void Messages::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getDelivered())
+        if(getSeen())
         {
-            binder << getValueOfDelivered();
+            binder << getValueOfSeen();
         }
         else
         {
@@ -789,13 +789,13 @@ Json::Value Messages::toJson() const
     {
         ret["created_at"]=Json::Value();
     }
-    if(getDelivered())
+    if(getSeen())
     {
-        ret["delivered"]=getValueOfDelivered();
+        ret["seen"]=getValueOfSeen();
     }
     else
     {
-        ret["delivered"]=Json::Value();
+        ret["seen"]=Json::Value();
     }
     return ret;
 }
@@ -863,9 +863,9 @@ Json::Value Messages::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getDelivered())
+            if(getSeen())
             {
-                ret[pMasqueradingVector[5]]=getValueOfDelivered();
+                ret[pMasqueradingVector[5]]=getValueOfSeen();
             }
             else
             {
@@ -915,13 +915,13 @@ Json::Value Messages::toMasqueradedJson(
     {
         ret["created_at"]=Json::Value();
     }
-    if(getDelivered())
+    if(getSeen())
     {
-        ret["delivered"]=getValueOfDelivered();
+        ret["seen"]=getValueOfSeen();
     }
     else
     {
-        ret["delivered"]=Json::Value();
+        ret["seen"]=Json::Value();
     }
     return ret;
 }
@@ -958,9 +958,9 @@ bool Messages::validateJsonForCreation(const Json::Value &pJson, std::string &er
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, true))
             return false;
     }
-    if(pJson.isMember("delivered"))
+    if(pJson.isMember("seen"))
     {
-        if(!validJsonOfField(5, "delivered", pJson["delivered"], err, true))
+        if(!validJsonOfField(5, "seen", pJson["seen"], err, true))
             return false;
     }
     return true;
@@ -1068,9 +1068,9 @@ bool Messages::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(4, "created_at", pJson["created_at"], err, false))
             return false;
     }
-    if(pJson.isMember("delivered"))
+    if(pJson.isMember("seen"))
     {
-        if(!validJsonOfField(5, "delivered", pJson["delivered"], err, false))
+        if(!validJsonOfField(5, "seen", pJson["seen"], err, false))
             return false;
     }
     return true;

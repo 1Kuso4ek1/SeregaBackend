@@ -14,6 +14,7 @@ set(
     BACKEND_HEADERS
 
     include/Controllers/AuthController.hpp
+    include/Controllers/ChatsController.hpp
     include/Controllers/StaticController.hpp
     include/Controllers/UsersController.hpp
 
@@ -31,6 +32,7 @@ set(
     BACKEND_SOURCES
 
     src/Controllers/AuthController.cpp
+    src/Controllers/ChatsController.cpp
     src/Controllers/StaticController.cpp
     src/Controllers/UsersController.cpp
 
