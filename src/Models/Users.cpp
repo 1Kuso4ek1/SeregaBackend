@@ -6,6 +6,7 @@
  */
 
 #include "Models/Users.hpp"
+#include "Models/Updates.hpp"
 #include "Models/UserKeys.hpp"
 #include <drogon/utils/Utilities.h>
 #include <string>
@@ -669,6 +670,42 @@ void Users::getKeys(const DbClientPtr &clientPtr,
                    for (auto const &row : r)
                    {
                        ret.emplace_back(UserKeys(row));
+                   }
+                   rcb(ret);
+               }
+               >> ecb;
+}
+std::vector<Updates> Users::getUpdates(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from updates where user_id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *id_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    std::vector<Updates> ret;
+    ret.reserve(r.size());
+    for (auto const &row : r)
+    {
+        ret.emplace_back(Updates(row));
+    }
+    return ret;
+}
+
+void Users::getUpdates(const DbClientPtr &clientPtr,
+                       const std::function<void(std::vector<Updates>)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from updates where user_id = $1";
+    *clientPtr << sql
+               << *id_
+               >> [rcb = std::move(rcb)](const Result &r){
+                   std::vector<Updates> ret;
+                   ret.reserve(r.size());
+                   for (auto const &row : r)
+                   {
+                       ret.emplace_back(Updates(row));
                    }
                    rcb(ret);
                }

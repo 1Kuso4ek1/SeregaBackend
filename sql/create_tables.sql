@@ -20,6 +20,13 @@ CREATE TABLE messages (
     delivered BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE updates (
+    id BIGSERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    payload JSONB NOT NULL
+);
+
 -- I'd say that this is some kind of migrations lol
 ALTER TABLE messages RENAME COLUMN delivered TO seen;
 ALTER TABLE user_keys DROP COLUMN updated_at;

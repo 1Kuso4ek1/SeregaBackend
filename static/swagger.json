@@ -209,6 +209,60 @@
           "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
+    },
+    "/updates": {
+      "get": {
+        "tags": ["Updates"],
+        "summary": "Get pending updates for the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "minimum": 1, "maximum": 200 },
+            "description": "Maximum number of updates to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0, "minimum": 0 },
+            "description": "Offset for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of updates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/UpdateResponse" }
+                },
+                "examples": {
+                  "messageUpdate": {
+                    "summary": "New message update",
+                    "value": [
+                      {
+                        "id": 1012,
+                        "type": "message",
+                        "payload": {
+                          "id": 555,
+                          "sender_id": 7,
+                          "receiver_id": 42,
+                          "content": "BASE64...",
+                          "created_at": "2025-08-28T12:34:56Z",
+                          "seen": false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
     }
   },
   "components": {
@@ -293,6 +347,17 @@
           "created_at": { "type": "string", "format": "date-time" },
           "seen": { "type": "boolean" }
         }
+      },
+      "UpdateResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "type": { "type": "string", "description": "Type of update (e.g. message, seen, chat_created)" },
+          "payload": {
+            "type": "object",
+            "description": "Event-specific payload (e.g. new message data)"
+          }
+        }
       }
     },
     "responses": {
@@ -322,6 +387,10 @@
     {
       "name": "Chats",
       "description": "Chat messages"
+    },
+    {
+      "name": "Updates",
+      "description": "Updates via long polling"
     }
   ]
 }
