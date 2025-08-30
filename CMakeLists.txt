@@ -27,6 +27,7 @@ set(
 
     include/Utils/JwtUtils.hpp
     include/Utils/Singleton.hpp
+    include/Controllers/UpdatesController.hpp
 )
 
 set(
@@ -45,9 +46,10 @@ set(
     src/Models/Users.cpp
 
     src/main.cpp
+    src/Controllers/UpdatesController.cpp
 )
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(libraries/drogon)

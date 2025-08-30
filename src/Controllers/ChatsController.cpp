@@ -1,6 +1,7 @@
 #include "Controllers/ChatsController.hpp"
 
 #include "Models/Messages.hpp"
+#include "Models/Updates.hpp"
 
 namespace Models = drogon_model::serega;
 
@@ -17,6 +18,7 @@ void ChatsController::sendMessage(const HttpRequestPtr& req, Callback&& callback
     }
 
     static auto messages = orm::Mapper<Models::Messages>(app().getDbClient());
+    static auto updates = orm::Mapper<Models::Updates>(app().getDbClient());
 
     try
     {
@@ -31,6 +33,13 @@ void ChatsController::sendMessage(const HttpRequestPtr& req, Callback&& callback
 
         Json::Value res;
         res["message_id"] = *message.getId();
+
+        Models::Updates update;
+        update.setUserId(userId);
+        update.setType("message");
+        update.setPayload(message.toJson().toStyledString());
+
+        updates.insert(update);
 
         const auto response = HttpResponse::newHttpJsonResponse(res);
         response->setStatusCode(k201Created);
