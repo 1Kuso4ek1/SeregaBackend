@@ -57,10 +57,10 @@ void ChatsController::getMessages(
         const auto chatMessages = messages
             .limit(limit).offset(offset)
             .orderBy("created_at")
-            .findBy((orm::Criteria{ "sender", userId }
-                        && orm::Criteria{ "receiver", chatId })
-                    || (orm::Criteria{ "sender", chatId }
-                        && orm::Criteria{ "receiver", userId }));
+            .findBy((orm::Criteria{ "sender_id", userId }
+                        && orm::Criteria{ "receiver_id", chatId })
+                    || (orm::Criteria{ "sender_id", chatId }
+                        && orm::Criteria{ "receiver_id", userId }));
 
         Json::Value res{ Json::arrayValue };
         for(const auto& message : chatMessages)

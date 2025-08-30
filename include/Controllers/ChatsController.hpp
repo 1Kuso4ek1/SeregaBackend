@@ -18,7 +18,7 @@ public:
     METHOD_LIST_BEGIN
 
         ADD_METHOD_TO(sendMessage, "/chats/{chat_id}/messages", Post, "Filters::JwtFilter");
-        ADD_METHOD_TO(getMessages, "/users/{chat_id}/messages", Get, "Filters::JwtFilter");
+        ADD_METHOD_TO(getMessages, "/chats/{chat_id}/messages?limit={limit}&offset={offset}", Get, "Filters::JwtFilter");
 
     METHOD_LIST_END
 };
